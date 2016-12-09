@@ -1,0 +1,30 @@
+#!/bin/bash
+function usage { 
+	echo "Usage: $0 <file1> <file2>" 1>&2
+	exit 1
+}
+
+function do_compare {
+	local file_a=$1
+	local file_b=$2
+	if [[ -r $file_a && -r $file_b ]]; then
+		echo -e "\nThe following lines are present in \"$file_a\" but not \"$file_b\":\n\n"
+		while read line_a; do
+		match=false
+			while read line_b; do
+				 if [[ $line_a == $line_b ]]; then
+				 	match=true
+				 fi
+			done<"$file_b"
+		if [ "$match" == false ]; then
+			echo $line_a
+		fi
+		done<"$file_a"
+	else
+		echo -e "Please specify two readable files for comparison.\n"
+		usage
+	fi
+}
+
+do_compare "$1" "$2"
+do_compare "$2" "$1" #reverse comparison
